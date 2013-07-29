@@ -6,12 +6,13 @@
 
   <div modal="valueDetails.show" close="valueDetails.close()" options="valueDetails.options">
     <form class="form-horizontal no-bottom-margin" ng-submit="valueDetails.close()">
-      <div class="modal-header"><h4>{{row.name}}</h4></div>
+      <div class="modal-header"><h4>aaa{{row.name}}</h4></div>
       <div class="modal-body">
-        <div ng-bind-html-unsafe="row.detailHtml"></div>
+        <input ng-model="row.value" />
       </div>
       <div class="modal-footer">
         <input class="btn" ng-click="valueDetails.close()" value="Close">
+        <input class="btn btn-primary" ng-click="edited(row)" type="submit" value="OK">
       </div>
     </form>
   </div>

@@ -12,7 +12,7 @@ module Jmx {
       cellTemplate: '<div class="ngCellText"><a href="{{folderHref(row)}}"><i class="{{folderIconClass(row)}}"></i> {{row.getProperty("title")}}</a></div>'
     }];
 
-  export function AttributesController($scope, $location, workspace:Workspace, jolokia) {
+  export function AttributesController($scope, $location, workspace:Workspace, jolokia, $dialog ) {
     $scope.searchText = '';
     $scope.columnDefs = [];
     $scope.selectedItems = [];
@@ -117,13 +117,37 @@ module Jmx {
       return row.getProperty("objectName") ? "icon-cog" : "icon-folder-close";
     };
 
+
+
+
+    $scope.edited = ( entity ) => {
+      $scope.valueDetails.close();
+      var mbean = workspace.getSelectedMBeanName();
+      if (mbean) {
+        var jolokia = workspace.jolokia;
+        jolokia.request({
+             type: 'write', mbean: mbean, attribute: entity.key, value: entity.value
+          },{
+              error: function(response) { editWritten("error", response.error) },
+              success: function(response) { editWritten("success",  "Value changed to " + entity.value) }
+        });
+      }
+      console.log( workspace.selection.get(entity.key) );
+    }
+
     $scope.openDetailView = (entity) => {
+    console.log(entity);
       $scope.row = entity;
       if (entity.detailHtml) {
         $scope.valueDetails.open();
       }
     };
 
+
+    function editWritten(status : string, message : string) {
+      notification(status, message);
+      updateTableContents();
+    }
 
     function operationComplete() {
       updateTableContents();
